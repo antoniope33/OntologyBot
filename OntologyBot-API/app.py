@@ -103,8 +103,6 @@ class FieldModel(BaseModel):
 app = FastAPI()
 
 
-# cambio de prueba
-
 @app.get('/')
 def read_root():
     return {"welcome": "Welcome to OntologyBot API",
