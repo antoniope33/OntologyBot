@@ -106,4 +106,12 @@ app = FastAPI()
 @app.get('/')
 def read_root():
     return {"welcome": "Welcome to OntologyBot API",
-            "autor": "Mr. Antonio Pérez"}
+            "author": "Mr. Antonio Pérez"}
+
+
+@app.post('/consulta_api')
+def consulta_api(dataField: FieldModel):
+
+    r = requests.post(base_url, data=dataField.dict())
+
+    return r.text
