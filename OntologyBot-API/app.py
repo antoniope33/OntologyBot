@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional, Text, Any, Dict
 
 import requests
+import json
 
 ##URL BASE PARA HACER LAS LLAMADAS A LA API DE ANNE##
 base_url = "http://rationale.kereval.com/api/request/"
@@ -110,8 +111,52 @@ def read_root():
 
 
 @app.post('/consulta_api')
-def consulta_api(dataField: FieldModel):
+def query_ontology_api(dataField: FieldModel):
 
     r = requests.post(base_url, data=dataField.dict())
 
     return r.text
+
+
+@app.post('/consulta_api_dialog')
+def query_ontology_api_dialogflow(request: FieldModel):
+
+    # print(request)
+
+    # CONVIERTO JSON A DICCIONARIO
+    #diccionario = json.loads(request)
+
+    # print(diccionario)
+
+    # OBTENGO DICCIONARIO QUERYRESULT PARA OBTENER LA INFO
+    queryResult = request['queryResult']
+
+    # OBTENGO INFO INTENT
+    intentInfo = queryResult['intent']
+
+    # OBTENGO NOMBRE DEL INTENT
+    nombreIntent = intentInfo['displayName']
+
+    # OBTENGO LISTA OUTPUTCONTEXTS PARA OBTENER POSTERIORMENTE LOS PARAMETROS
+    outputContexts = queryResult['outputContexts']
+
+    # ACCEDO AL DICCIONARIO DE OUTPUTCONTEXTS
+    outputContextsDict = outputContexts[0]
+
+    # ACCEDO AL DICCIONARIO DE PARAMETROS SI EXISTE LA CLAVE (ALGUNOS INTENTS NO TIENEN PARAMETERS)
+    if "parameters" in outputContextsDict:
+        parameters = outputContextsDict['parameters']
+
+    # RECORRO EL DICCIONARIO (ESTO ES PARA PONER LOS VALORES EN EL DICCIONARIO)
+    if "parameters" in locals():
+        for parametro in parameters:
+
+            # RECORRO EL DICCIONARIO VACIO PARA HACER LA LLAMADA FINAL
+            for entidad in field_dict:
+
+                # SI COINCIDEN LAS CLAVES PONGO EL VALOR DEL JSON EN EL DICCIONARIO PARA LA LLAMADA
+                if parametro == entidad:
+
+                    field_dict[entidad] = parameters[parametro]
+
+    print(field_dict)
