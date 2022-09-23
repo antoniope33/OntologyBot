@@ -1,7 +1,10 @@
+from encodings import normalize_encoding
+from os import system
+from re import I
+from urllib import request
 from fastapi import FastAPI, Request, Response
 from pydantic import BaseModel
 from typing import Optional, Text, Any, Dict
-
 import requests
 import json
 
@@ -119,7 +122,7 @@ def query_ontology_api(dataField: FieldModel):
 
 
 @app.post('/consulta_api_dialog')
-def query_ontology_api_dialogflow(request: FieldModel):
+def query_ontology_api_dialogflow(request: Dict[Any, Any]):
 
     # print(request)
 
@@ -160,3 +163,9 @@ def query_ontology_api_dialogflow(request: FieldModel):
                     field_dict[entidad] = parameters[parametro]
 
     print(field_dict)
+
+    # Si es uno de los intents finales hago la llamada a la API
+    if (nombreIntent == "errorMitigationMechanism" or nombreIntent == "noTMS"):
+        r = requests.post(base_url, data=field_dict)
+
+        print(r.text)
