@@ -140,6 +140,11 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
     # OBTENGO NOMBRE DEL INTENT
     nombreIntent = intentInfo['displayName']
 
+    # SI ES EL DEFAULT WELCOME INTENT VACIO EL DICCIONARIO
+    if nombreIntent == "Default Welcome Intent":
+        for entidad in field_dict:
+            field_dict[entidad] = ''
+
     # OBTENGO LISTA OUTPUTCONTEXTS PARA OBTENER POSTERIORMENTE LOS PARAMETROS
     outputContexts = queryResult['outputContexts']
 
@@ -149,6 +154,16 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
     # ACCEDO AL DICCIONARIO DE PARAMETROS SI EXISTE LA CLAVE (ALGUNOS INTENTS NO TIENEN PARAMETERS)
     if "parameters" in outputContextsDict:
         parameters = outputContextsDict['parameters']
+
+    # ESTABLEZCO PRIMERO LOS PARAMETROS QUE NO TIENEN ENTIDADES EN DIALOGFLOW
+    if nombreIntent == "datasetSUT":
+        field_dict['dataset'] = parameters['any']
+
+    elif nombreIntent == "vulnerability":
+        field_dict['vulnerability'] = parameters['any']
+
+    elif nombreIntent == "errorMitigationMechanism":
+        field_dict['error_mitigation_mechanism'] = parameters['any']
 
     # RECORRO EL DICCIONARIO (ESTO ES PARA PONER LOS VALORES EN EL DICCIONARIO)
     if "parameters" in locals():
@@ -169,3 +184,4 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         r = requests.post(base_url, data=field_dict)
 
         print(r.text)
+        return r.text
