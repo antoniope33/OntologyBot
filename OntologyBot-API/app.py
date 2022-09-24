@@ -175,7 +175,11 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
                 # SI COINCIDEN LAS CLAVES PONGO EL VALOR DEL JSON EN EL DICCIONARIO PARA LA LLAMADA
                 if parametro == entidad:
 
-                    field_dict[entidad] = parameters[parametro]
+                    # Si recibe skip lo deja vacio porque el usuario ha saltado la pregunta. Si no pone el valor
+                    if parameters[parametro] == 'Skip':
+                        field_dict[entidad] = ''
+                    else:
+                        field_dict[entidad] = parameters[parametro]
 
     print(field_dict)
 
