@@ -188,4 +188,10 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         r = requests.post(base_url, data=field_dict)
 
         print(r.text)
-        return r.text
+
+        fulfillmentText = r.text
+
+        return {
+            "fulfillmentText": fulfillmentText,
+            "source": "webhookdata"
+        }
