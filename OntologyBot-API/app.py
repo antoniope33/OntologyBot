@@ -113,7 +113,7 @@ def read_root():
             "author": "Mr. Antonio Pérez"}
 
 
-@app.post('/consulta_api')
+@app.post('/query_ontology_api')
 def query_ontology_api(dataField: FieldModel):
 
     r = requests.post(base_url, data=dataField.dict())
@@ -121,7 +121,7 @@ def query_ontology_api(dataField: FieldModel):
     return r.text
 
 
-@app.post('/consulta_api_dialog')
+@app.post('/query_ontology_api_dialogflow')
 def query_ontology_api_dialogflow(request: Dict[Any, Any]):
 
     # print(request)
@@ -145,6 +145,9 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         for entidad in field_dict:
             field_dict[entidad] = ''
 
+        title = "Hi, I'm the bot who will help you to know all about testing of machine learning IAs! Are you looking for Attack, Threat Mitigation Strategy or Testing Approach??"
+        quickReplies = [
+            "Attack", "Threat Mitigation Strategy", "Testing Approach"]
         fulfillmentText = "Hi, I'm the bot who will help you to know all about testing of machine learning IAs! Are you looking for Attack, Threat Mitigation Strategy or Testing Approach??"
 
     # OBTENGO LISTA OUTPUTCONTEXTS PARA OBTENER POSTERIORMENTE LOS PARAMETROS
@@ -187,103 +190,208 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
     if (nombreIntent == "errorMitigationMechanism" or nombreIntent == "noTMS"):
         r = requests.post(base_url, data=field_dict)
 
-        fulfillmentText = r.text
+        if r.status_code != 200:
+
+            title = "Oops! :(\n\nThere was an error. Try again later"
+            quickReplies = ["New query"]
+            fulfillmentText = "Oops! :(\n\nThere was an error. Try again later"
+        else:
+            if r.text == {}:
+                title = "I have not been able to find an answer to your query. Please try again"
+                quickReplies = ["New query"]
+                fulfillmentText = "I have not been able to find an answer to your query. Please try again"
+            else:
+
+                # CONVIERTO RESPUESTA A DICCIONARIO
+                dictResponse = json.loads(r.text)
+                response = ""
+
+                # RECORRO EL DICCIONARIO PARA OBTENER LOS VALORES
+                for i in dictResponse:
+                    value = dictResponse[i]
+
+                    # NOMBRE
+                    response = response + value[0] + ": "
+
+                    # SI ESTÁ VACÍO MUESTRO QUE NO HAY INFO
+                    if value[2] == "":
+                        response = response + "No info\n\n"
+
+                    # SI TIENE CONTENIDO LO MUESTRO
+                    else:
+                        response = response + value[2] + "\n\n"
+
+                # RESPUESTA
+                title = response
+                quickReplies = ["New query"]
+                fulfillmentText = response
 
     # RESPUESTA PARA CADA INTENT
     # Access
     if nombreIntent == 'access':
+        title = "Nice, thanks! Now, do you want to answer some questions about the Threats"
+        quickReplies = ["Yes", "No"]
         fulfillmentText = "Nice, thanks! Now, do you want to answer some questions about the Threats"
 
     elif nombreIntent == 'adversarialCapability':
+        title = "Very good! Now, tell me what is the adversarial goal of your system. Availability violation, Confidentiality violation, Integrity violation or Privacy violation?"
+        quickReplies = ["Availabilty",
+                        "Confidentiality", "Integrity", "Privacy"]
         fulfillmentText = "Very good! Now, tell me what is the adversarial goal of your system. Availability violation, Confidentiality violation, Integrity violation or Privacy violation?"
 
     elif nombreIntent == 'adversarialGoal':
+        title = "All rigth! What is the adversarial strategy? Iterative strategy or One-shot strategy?"
+        quickReplies = ["Iterative", "One-shot"]
         fulfillmentText = "All rigth! What is the adversarial strategy? Iterative strategy or One-shot strategy?"
 
     elif nombreIntent == 'adversarialKnowledge':
+        title = "Okey! What is the adversarial capability? Pipeline, Model, Architecture, Parameters, Reading, Injection, Modification or Logic Corruption?"
+        quickReplies = ["Pipeline", "Model", "Architecture", "Parameters",
+                        "Reading", "Injection", "Modification", "Logic Corruption"]
         fulfillmentText = "Okey! What is the adversarial capability? Pipeline, Model, Architecture, Parameters, Reading, Injection, Modification or Logic Corruption?"
 
     elif nombreIntent == 'adversarialStrategy':
+        title = "Perfect, thanks! Now, do you answer some questions of the Threat Mitigation Strategy?"
+        quickReplies = ["Yes", "No"]
         fulfillmentText = "Perfect, thanks! Now, do you answer some questions of the Threat Mitigation Strategy?"
 
     elif nombreIntent == 'datasetSUT':
+        title = "Ok. Tell me the type of ML algorithm that trained the model of your system under test. Supervised Learning, Unsupervised Learning or Reinforcement Learning?"
+        quickReplies = ["Supervised", "Unsupervised", "Reinforcement"]
         fulfillmentText = "Ok. Tell me the type of ML algorithm that trained the model of your system under test. Supervised Learning, Unsupervised Learning or Reinforcement Learning?"
 
     elif nombreIntent == 'dataTypeSUT':
+        title = "Nice. Tell me the name of  the dataset used for training. For example, MINIST, ImageNet, IMDb Movie Reviews, etc."
+        quickReplies = ["Skip"]
         fulfillmentText = "Nice. Tell me the name of  the dataset used for training. For example, MINIST, ImageNet, IMDb Movie Reviews, etc."
 
     elif nombreIntent == 'defenseStrategy':
+        title = "Nice! Finally, list or name error mitigations mechanism"
+        quickReplies = ["Skip"]
         fulfillmentText = "Nice! Finally, list or name error mitigations mechanism"
 
     elif nombreIntent == 'evaluationMechanism':
+        title = "Okey! Tell me what type of defense strategy use your system. Proactive Defense or Reactive Defense?"
+        quickReplies = ["Proactive", "Reactive"]
         fulfillmentText = "Okey! Tell me what type of defense strategy use your system. Proactive Defense or Reactive Defense?"
 
     elif nombreIntent == 'fault':
+        title = "Nice, thanks! Do you want to answer some questions about the Testing Approach?"
+        quickReplies = ["Yes", "No"]
         fulfillmentText = "Nice, thanks! Do you want to answer some questions about the Testing Approach?"
 
     elif nombreIntent == "mlAlgorithmSUT":
+        title = "Ok, thanks. Now, what is the model type of your system under test? Autoencoder, CNN, FFNN, RNN/LSTM, Other NN, Decision Tree, Linear Regresion, Multi-Layer Perceptron, Support Vector Machine or other?"
+        quickReplies = ["Autoencoder", "CNN", "FFNN", "RNN/LSTM",
+                        "Oter NN, Decision Tree", "Regresion", "Multi-Layer", "SVM", "Other"]
         fulfillmentText = "Ok, thanks. Now, what is the model type of your system under test? Autoencoder, CNN, FFNN, RNN/LSTM, Other NN, Decision Tree, Linear Regresion, Multi-Layer Perceptron, Support Vector Machine or other?"
 
     elif nombreIntent == 'mlModelType':
+        title = "Very nice! Tell me the way in which your system feature is accessed. Black-box access or White-box access?"
+        quickReplies = ["Black-box", "White-box"]
         fulfillmentText = "Very nice! Tell me the way in which your system feature is accessed. Black-box access or White-box access?"
 
     elif nombreIntent == 'noAdversarialModel':
+        title = "Got it! Do you want to answer some questions about the Threat Mitigation Strategy of your system under test?"
+        quickReplies = ["Yes", "No"]
         fulfillmentText = "Got it! Do you want to answer some questions about the Threat Mitigation Strategy of your system under test?"
 
     elif nombreIntent == 'noSUT':
+        title = "Ok, do you want to answer some questions about threats?"
+        quickReplies = ["Yes", "No"]
         fulfillmentText = "Ok, do you want to answer some questions about threats?"
 
     elif nombreIntent == 'noTesting':
+        title = "Okey! Do you want to answer some questions about the Adversarial Model of your system?"
+        quickReplies = ["Yes", "No"]
         fulfillmentText = "Okey! Do you want to answer some questions about the Adversarial Model of your system?"
 
     elif nombreIntent == 'noThreats':
+        title = "Ok, do you want to answer some questions about the Testing Approach?"
+        quickReplies = ["Yes", "No"]
         fulfillmentText = "Ok, do you want to answer some questions about the Testing Approach?"
 
     elif nombreIntent == 'siAdversarialModel':
+        title = "Perfect! What is the targeted phase of your system? Training or Testing/Inference?"
+        quickReplies = ["Training", "Testing/Interference"]
         fulfillmentText = "Perfect! What is the targeted phase of your system? Training or Testing/Inference?"
 
     elif nombreIntent == 'siSUT':
+        title = "Nice! What is the task of your system under test? Classification, Clustering Analysis, Controlling and Scheming, Dimensionality Reduction or Regression?"
+        quickReplies = ["Classification", "Clustering",
+                        "Controlling and ...", "Reduction", "Regression"]
         fulfillmentText = "Nice! What is the task of your system under test? Classification, Clustering Analysis, Controlling and Scheming, Dimensionality Reduction or Regression?"
 
     elif nombreIntent == 'siTesting':
+        title = "Nice! What is the verified requierement of your system under test? Functional Requirement, Performance Requirement, Safety Requirement or Security Requirement?"
+        quickReplies = ["Functional", "Performance", "Safety", "Security"]
         fulfillmentText = "Nice! What is the verified requierement of your system under test? Functional Requirement, Performance Requirement, Safety Requirement or Security Requirement?"
 
     elif nombreIntent == 'siThreats':
+        title = "Let's go! What is the threat type? Accidental Threat or Intentional Threat?"
+        quickReplies = ["Accidental", "Intentional"]
         fulfillmentText = "Let's go! What is the threat type? Accidental Threat or Intentional Threat?"
 
     elif nombreIntent == 'siTMS':
+        title = "Got it! What is the evaluation mechanism of your system under test? Holdout method, Cross-validation, k-fold cross-validation, Leave-one-out cross-validation or other?"
+        quickReplies = ["Holdout", "Cross-validation",
+                        "k-fold", "Leave-one-out", "Other"]
         fulfillmentText = "Got it! What is the evaluation mechanism of your system under test? Holdout method, Cross-validation, k-fold cross-validation, Leave-one-out cross-validation or other?"
 
     elif nombreIntent == 'targetedPhase':
+        title = "Good! What is the adversarial knowledge? Complete knowledge or Partial/Constrained knowledge?"
+        quickReplies = ["Complete", "Partial/Constrained"]
         fulfillmentText = "Good! What is the adversarial knowledge? Complete knowledge or Partial/Constrained knowledge?"
 
     elif nombreIntent == 'taskSUT':
+        title = "Ok. What is the data type of your system under test? Numerical data, Categorical data, Time series data, Image, Audio or Text?"
+        quickReplies = ["Numerical", "Categorical",
+                        "Time series", "Image", "Audio", "Text"]
         fulfillmentText = "Ok. What is the data type of your system under test? Numerical data, Categorical data, Time series data, Image, Audio or Text?"
 
     elif nombreIntent == 'testAdequacyMetric':
+        title = "Good! Now, do you want to answer some questions about the Adversarial Model?"
+        quickReplies = ["Yes", "No"]
         fulfillmentText = "Good! Now, do you want to answer some questions about the Adversarial Model?"
 
     elif nombreIntent == 'testCaseGeneratorType':
+        title = "Okey! What is the test adequacy metric? Coverage, Distance, Mutation score, other or none?"
+        quickReplies = ["Coverage", "Distance", "Mutation", "Other", "None"]
         fulfillmentText = "Okey! What is the test adequacy metric? Coverage, Distance, Mutation score, other or none?"
 
     elif nombreIntent == 'testOracleType':
+        title = "Thanks! What is the test case generator type? Adversarial Input Generator, Combinatorial Generator, Input Mutation Generator, Manual Generator, Random Generator or Search-based Generator?"
+        quickReplies = ["Adversarial", "Combinatorial",
+                        "Input Mutation", "Manual", "Random", "Search-based"]
         fulfillmentText = "Thanks! What is the test case generator type? Adversarial Input Generator, Combinatorial Generator, Input Mutation Generator, Manual Generator, Random Generator or Search-based Generator?"
 
     elif nombreIntent == 'threatType':
+        title = "Good! Now, list known vulnerabilities of your system."
+        quickReplies = ["Skip"]
         fulfillmentText = "Good! Now, list known vulnerabilities of your system."
 
     elif nombreIntent == 'verifiedRequirement':
+        title = "Perfect! Now, what is the test oracle type of your system under test? Derived, Human, Implicit or Specified?"
+        quickReplies = ["Derived", "Human", "Implicit", "Specified"]
         fulfillmentText = "Perfect! Now, what is the test oracle type of your system under test? Derived, Human, Implicit or Specified?"
 
     elif nombreIntent == 'vulnerability':
+        title = "Good! What is the fault of your system under test? Misclassification, Underfitting, Overfitting, Bias, Negative side effects, Reward hacking or other?"
+        quickReplies = ["Missclassification", "Underfitting", "Overfitting",
+                        "Bias", "Negative side effects", "Reward hacking", "Other"]
         fulfillmentText = "Good! What is the fault of your system under test? Misclassification, Underfitting, Overfitting, Bias, Negative side effects, Reward hacking or other?"
 
     elif nombreIntent == "Looking for Intent":
+        title = "Great! Do you want to answer some questions about your system under test??"
+        quickReplies = ["Yes", "No"]
         fulfillmentText = "Great! Do you want to answer some questions about your system under test??"
 
     print(field_dict)
 
-    return {
-        "fulfillmentText": fulfillmentText,
-        "source": "webhookdata"
-    }
+    return {"fulfillmentText": fulfillmentText,
+            "fulfillmentMessages": [{"quickReplies": {
+                "title": title,
+                "quickReplies": quickReplies
+            },
+                "platform": "TELEGRAM"}]
+            }
