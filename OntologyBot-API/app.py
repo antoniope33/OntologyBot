@@ -104,7 +104,8 @@ class FieldModel(BaseModel):
     error_mitigation_mechanism: Text = ""
 
 
-app = FastAPI()
+app = FastAPI(
+    title="OntologyBot API")
 
 
 @app.get('/')
@@ -141,7 +142,7 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
     nombreIntent = intentInfo['displayName']
 
     # SI ES EL DEFAULT WELCOME INTENT VACIO EL DICCIONARIO
-    if nombreIntent == "Default Welcome Intent":
+    if nombreIntent == "useOntology":
         for entidad in field_dict:
             field_dict[entidad] = ''
 
@@ -149,6 +150,40 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         quickReplies = [
             "Attack", "Threat Mitigation Strategy", "Testing Approach"]
         fulfillmentText = "Hi, I'm the bot who will help you to know all about testing of machine learning AIs! Are you looking for Attack, Threat Mitigation Strategy or Testing Approach??"
+
+    elif nombreIntent == "Default Welcome Intent":
+        for entidad in field_dict:
+            field_dict[entidad] = ''
+
+        return {"fulfillmentMessages": [
+            {
+                "card": {
+                    "title": "Hello! What do you want to do?",
+                    "buttons": [
+                        {
+                            "text": "Use ontology",
+                            "postback": "Use ontology"
+                        },
+                        {
+                            "text": "Help",
+                            "postback": "Help"
+                        },
+                        {
+                            "text": "Contact",
+                            "postback": "Contact"
+                        },
+                        {
+                            "text": "Bug",
+                            "postback": "Error"
+                        }
+                    ]
+                },
+                "platform": "TELEGRAM"
+            },
+            {"quickReplies": {
+                "quickReplies": ["New query"]
+            },
+                "platform": "TELEGRAM"}]}
 
     # OBTENGO LISTA OUTPUTCONTEXTS PARA OBTENER POSTERIORMENTE LOS PARAMETROS
     outputContexts = queryResult['outputContexts']
@@ -162,13 +197,22 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
 
     # ESTABLEZCO PRIMERO LOS PARAMETROS QUE NO TIENEN ENTIDADES EN DIALOGFLOW
     if nombreIntent == "datasetSUT":
-        field_dict['dataset'] = parameters['any']
+        if (parameters['any'] == 'Skip' or parameters['any'] == 'skip'):
+            field_dict['dataset'] = ""
+        else:
+            field_dict['dataset'] = parameters['any']
 
     elif nombreIntent == "vulnerability":
-        field_dict['vulnerability'] = parameters['any']
+        if (parameters['any'] == 'Skip' or parameters['any'] == 'skip'):
+            field_dict['vulnerability'] = ""
+        else:
+            field_dict['vulnerability'] = parameters['any']
 
     elif nombreIntent == "errorMitigationMechanism":
-        field_dict['error_mitigation_mechanism'] = parameters['any']
+        if (parameters['any'] == 'Skip' or parameters['any'] == 'skip'):
+            field_dict['error_mitigation_mechanism'] = ""
+        else:
+            field_dict['error_mitigation_mechanism'] = parameters['any']
 
     # RECORRO EL DICCIONARIO (ESTO ES PARA PONER LOS VALORES EN EL DICCIONARIO)
     if "parameters" in locals():
@@ -190,16 +234,18 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
     if (nombreIntent == "errorMitigationMechanism" or nombreIntent == "noTMS"):
         r = requests.post(base_url, data=field_dict)
 
+        print(r.status_code)
+
         if r.status_code != 200:
 
-            title = "Oops! :(\n\nThere was an error. Try again later"
+            title = "Oops❗ :(\n\nThere was an error. Try again later"
             quickReplies = ["New query"]
-            fulfillmentText = "Oops! :(\n\nThere was an error. Try again later"
+            fulfillmentText = "Oops❗ :(\n\nThere was an error. Try again later"
         else:
-            if r.text == {}:
-                title = "I have not been able to find an answer to your query. Please try again"
+            if r.text == '{}':
+                title = "😕​ I have not been able to find an answer to your query. Please try again"
                 quickReplies = ["New query"]
-                fulfillmentText = "I have not been able to find an answer to your query. Please try again"
+                fulfillmentText = "😕​ I have not been able to find an answer to your query. Please try again"
             else:
 
                 # CONVIERTO RESPUESTA A DICCIONARIO
@@ -229,7 +275,7 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
     # RESPUESTA PARA CADA INTENT
     # Access
     if nombreIntent == 'access':
-        title = "Nice, thanks! Now, do you want to answer some questions about the Threats"
+        title = "Nice, thanks! Now, It would be interesting if you answered the questions about the Threats"
         quickReplies = ["Yes", "No"]
         fulfillmentText = "Nice, thanks! Now, do you want to answer some questions about the Threats"
 
@@ -276,15 +322,15 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         fulfillmentText = "Okey! Tell me what type of defense strategy use your system. Proactive Defense or Reactive Defense?"
 
     elif nombreIntent == 'fault':
-        title = "Nice, thanks! Do you want to answer some questions about the Testing Approach?"
+        title = "Nice, thanks! It would be interesting if you answered the questions about the Testing Approach"
         quickReplies = ["Yes", "No"]
         fulfillmentText = "Nice, thanks! Do you want to answer some questions about the Testing Approach?"
 
     elif nombreIntent == "mlAlgorithmSUT":
-        title = "Ok, thanks. Now, what is the model type of your system under test? Autoencoder, CNN, FFNN, RNN/LSTM, Other NN, Decision Tree, Linear Regresion, Multi-Layer Perceptron, Support Vector Machine or other?"
+        title = "Ok, thanks. Now, what is the model type of your system under test? Autoencoder, CNN, FFNN, RNN/LSTM, Other NN, Decision Tree, Linear Regression, Multi-Layer Perceptron, Support Vector Machine or other?"
         quickReplies = ["Autoencoder", "CNN", "FFNN", "RNN/LSTM",
-                        "Oter NN, Decision Tree", "Regresion", "Multi-Layer", "SVM", "Other"]
-        fulfillmentText = "Ok, thanks. Now, what is the model type of your system under test? Autoencoder, CNN, FFNN, RNN/LSTM, Other NN, Decision Tree, Linear Regresion, Multi-Layer Perceptron, Support Vector Machine or other?"
+                        "Oter NN", "Decision Tree", "Regression", "Multi-Layer", "SVM", "Other"]
+        fulfillmentText = "Ok, thanks. Now, what is the model type of your system under test? Autoencoder, CNN, FFNN, RNN/LSTM, Other NN, Decision Tree, Linear Regression, Multi-Layer Perceptron, Support Vector Machine or other?"
 
     elif nombreIntent == 'mlModelType':
         title = "Very nice! Tell me the way in which your system feature is accessed. Black-box access or White-box access?"
@@ -292,22 +338,22 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         fulfillmentText = "Very nice! Tell me the way in which your system feature is accessed. Black-box access or White-box access?"
 
     elif nombreIntent == 'noAdversarialModel':
-        title = "Got it! Do you want to answer some questions about the Threat Mitigation Strategy of your system under test?"
+        title = "Got it! It would be interesting if you answered the questions about the Threat Mitigation Strategy of your system under test"
         quickReplies = ["Yes", "No"]
         fulfillmentText = "Got it! Do you want to answer some questions about the Threat Mitigation Strategy of your system under test?"
 
     elif nombreIntent == 'noSUT':
-        title = "Ok, do you want to answer some questions about threats?"
+        title = "Ok, It would be interesting if you answered the questions about the Threats"
         quickReplies = ["Yes", "No"]
-        fulfillmentText = "Ok, do you want to answer some questions about threats?"
+        fulfillmentText = "Ok, do you want to answer some questions about the Threats?"
 
     elif nombreIntent == 'noTesting':
-        title = "Okey! Do you want to answer some questions about the Adversarial Model of your system?"
+        title = "Okey! It would be interesting if you answered the questions about the Adversarial Model of your system"
         quickReplies = ["Yes", "No"]
         fulfillmentText = "Okey! Do you want to answer some questions about the Adversarial Model of your system?"
 
     elif nombreIntent == 'noThreats':
-        title = "Ok, do you want to answer some questions about the Testing Approach?"
+        title = "Ok, It would be interesting if you answered the questions about the Testing Approach"
         quickReplies = ["Yes", "No"]
         fulfillmentText = "Ok, do you want to answer some questions about the Testing Approach?"
 
@@ -319,13 +365,13 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
     elif nombreIntent == 'siSUT':
         title = "Nice! What is the task of your system under test? Classification, Clustering Analysis, Controlling and Scheming, Dimensionality Reduction or Regression?"
         quickReplies = ["Classification", "Clustering",
-                        "Controlling and ...", "Reduction", "Regression"]
+                        "Controlling and Scheming", "Reduction", "Regression"]
         fulfillmentText = "Nice! What is the task of your system under test? Classification, Clustering Analysis, Controlling and Scheming, Dimensionality Reduction or Regression?"
 
     elif nombreIntent == 'siTesting':
-        title = "Nice! What is the verified requierement of your system under test? Functional Requirement, Performance Requirement, Safety Requirement or Security Requirement?"
+        title = "Nice! What is the verified requirement of your system under test? Functional Requirement, Performance Requirement, Safety Requirement or Security Requirement?"
         quickReplies = ["Functional", "Performance", "Safety", "Security"]
-        fulfillmentText = "Nice! What is the verified requierement of your system under test? Functional Requirement, Performance Requirement, Safety Requirement or Security Requirement?"
+        fulfillmentText = "Nice! What is the verified requirement of your system under test? Functional Requirement, Performance Requirement, Safety Requirement or Security Requirement?"
 
     elif nombreIntent == 'siThreats':
         title = "Let's go! What is the threat type? Accidental Threat or Intentional Threat?"
@@ -350,7 +396,7 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         fulfillmentText = "Ok. What is the data type of your system under test? Numerical data, Categorical data, Time series data, Image, Audio or Text?"
 
     elif nombreIntent == 'testAdequacyMetric':
-        title = "Good! Now, do you want to answer some questions about the Adversarial Model?"
+        title = "Good! Now, it would be interesting if you answered the questions about the Adversarial Model"
         quickReplies = ["Yes", "No"]
         fulfillmentText = "Good! Now, do you want to answer some questions about the Adversarial Model?"
 
@@ -382,7 +428,7 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         fulfillmentText = "Good! What is the fault of your system under test? Misclassification, Underfitting, Overfitting, Bias, Negative side effects, Reward hacking or other?"
 
     elif nombreIntent == "Looking for Intent":
-        title = "Great! Do you want to answer some questions about your system under test??"
+        title = "Great! It would be interesting if you answered the questions about your system under test"
         quickReplies = ["Yes", "No"]
         fulfillmentText = "Great! Do you want to answer some questions about your system under test??"
 
@@ -400,6 +446,7 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         title = "𝗢𝗼𝗽𝘀❗ :(\n\nIf you have found an error about me, you can write to this email address and explain to my creators what is wrong. Thanks for helping me!\n\n📧 𝐄𝐦𝐚𝐢𝐥 𝐚𝐝𝐝𝐫𝐞𝐬𝐬: ontologybot.error@gmail.com"
         quickReplies = ["New query"]
         fulfillmentText = "𝗢𝗼𝗽𝘀❗ :(\n\nIf you have found an error about me, you can write to this email address and explain to my creators what is wrong. Thanks for helping me!\n\n📧 𝐄𝐦𝐚𝐢𝐥 𝐚𝐝𝐝𝐫𝐞𝐬𝐬: ontologybot.error@gmail.com"
+
     print(field_dict)
 
     return {"fulfillmentText": fulfillmentText,
