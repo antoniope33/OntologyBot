@@ -145,10 +145,10 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         for entidad in field_dict:
             field_dict[entidad] = ''
 
-        title = "Hi, I'm the bot who will help you to know all about testing of machine learning IAs! Are you looking for Attack, Threat Mitigation Strategy or Testing Approach??"
+        title = "Hi, I'm the bot who will help you to know all about testing of machine learning AIs! Are you looking for Attack, Threat Mitigation Strategy or Testing Approach??"
         quickReplies = [
             "Attack", "Threat Mitigation Strategy", "Testing Approach"]
-        fulfillmentText = "Hi, I'm the bot who will help you to know all about testing of machine learning IAs! Are you looking for Attack, Threat Mitigation Strategy or Testing Approach??"
+        fulfillmentText = "Hi, I'm the bot who will help you to know all about testing of machine learning AIs! Are you looking for Attack, Threat Mitigation Strategy or Testing Approach??"
 
     # OBTENGO LISTA OUTPUTCONTEXTS PARA OBTENER POSTERIORMENTE LOS PARAMETROS
     outputContexts = queryResult['outputContexts']
@@ -386,6 +386,20 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         quickReplies = ["Yes", "No"]
         fulfillmentText = "Great! Do you want to answer some questions about your system under test??"
 
+    elif nombreIntent == "help":
+        title = "Here you have the help you need to talk with me:\n\n💬 𝐔𝐬𝐞 𝐨𝐧𝐭𝐨𝐥𝐨𝐠𝐲: To use the ontology you only have to write 'Hi', 'Use ontology' or 'New query' and answer the questions that I will ask you\n\n​📧​​ 𝐂𝐨𝐧𝐭𝐚𝐜𝐭: If you want to know the contact information you just have to write 'Contact' and I will show you all information\n\n⚠️ 𝐄𝐫𝐫𝐨𝐫: If you want to report some error you just have to write 'Report error' or 'Error' and I will show how you can report it\n\n🆘​ 𝐇𝐞𝐥𝐩: If you want to consult this information you just have to write 'Help' and I will show it you\n\n⁉️​ 𝐔𝐬𝐞𝐟𝐮𝐥 𝐜𝐨𝐧𝐜𝐞𝐩𝐭𝐬: For information about the concepts of the questions see this link http://rationale.kereval.com"
+        quickReplies = ["New query"]
+        fulfillmentText = "Here you have the help you need to talk with me:\n\n💬 𝐔𝐬𝐞 𝐨𝐧𝐭𝐨𝐥𝐨𝐠𝐲: To use the ontology you only have to write 'Hi', 'Use ontology' or 'New query' and answer the questions that I will ask you\n\n​📧​ 𝐂𝐨𝐧𝐭𝐚𝐜𝐭: If you want to know the contact information you just have to write 'Contact' and I will show you all information\n\n⚠️ 𝐄𝐫𝐫𝐨𝐫: If you want to report some error you just have to write 'Report error' or 'Error' and I will show how you can report it\n\n🆘​ 𝐇𝐞𝐥𝐩: If you want to consult this information you just have to write 'Help' and I will show it you\n\n⁉️​ 𝐔𝐬𝐞𝐟𝐮𝐥 𝐜𝐨𝐧𝐜𝐞𝐩𝐭𝐬: For information about the concepts of the questions see this link http://rationale.kereval.com"
+
+    elif nombreIntent == "contact":
+        title = "Here you have all contact information:\n\nYou can contact us to give feedback or to contribute.\n\n🤝​ If you want to 𝐜𝐨𝐧𝐭𝐫𝐢𝐛𝐮𝐭𝐞, write to this email address (ontology.cotribute@gmail.com) indicating the type of component in the subject and explain this component in the body\n\n🤔 If you want to give 𝐟𝐞𝐞𝐝𝐛𝐚𝐜𝐤, you can write to this email address (ontology.feedback@gmail.com) whatever you want\n\nThank you for contacting us ❤️!"
+        quickReplies = ["New query"]
+        fulfillmentText = "Here you have all contact information:\n\nYou can contact us to give feedback or to contribute.\n\n🤝​ If you want to 𝐜𝐨𝐧𝐭𝐫𝐢𝐛𝐮𝐭𝐞, write to this email address (ontology.cotribute@gmail.com) indicating the type of component in the subject and explain this component in the body\n\n🤔 If you want to give 𝐟𝐞𝐞𝐝𝐛𝐚𝐜𝐤, you can write to this email address (ontology.feedback@gmail.com) whatever you want\n\nThank you for contacting us ❤️!"
+
+    elif nombreIntent == "errorReport":
+        title = "𝗢𝗼𝗽𝘀❗ :(\n\nIf you have found an error about me, you can write to this email address and explain to my creators what is wrong. Thanks for helping me!\n\n📧 𝐄𝐦𝐚𝐢𝐥 𝐚𝐝𝐝𝐫𝐞𝐬𝐬: ontologybot.error@gmail.com"
+        quickReplies = ["New query"]
+        fulfillmentText = "𝗢𝗼𝗽𝘀❗ :(\n\nIf you have found an error about me, you can write to this email address and explain to my creators what is wrong. Thanks for helping me!\n\n📧 𝐄𝐦𝐚𝐢𝐥 𝐚𝐝𝐝𝐫𝐞𝐬𝐬: ontologybot.error@gmail.com"
     print(field_dict)
 
     return {"fulfillmentText": fulfillmentText,
