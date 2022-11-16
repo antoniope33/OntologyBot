@@ -196,6 +196,7 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         parameters = outputContextsDict['parameters']
 
     # ESTABLEZCO PRIMERO LOS PARAMETROS QUE NO TIENEN ENTIDADES EN DIALOGFLOW
+    print(nombreIntent)
     if nombreIntent == "datasetSUT":
         if (parameters['any'] == 'Skip' or parameters['any'] == 'skip'):
             field_dict['dataset'] = ""
@@ -281,7 +282,7 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
 
     elif nombreIntent == 'adversarialCapability':
         title = "Very good! Now, tell me what is the adversarial goal of your system. Availability violation, Confidentiality violation, Integrity violation or Privacy violation?"
-        quickReplies = ["Availabilty",
+        quickReplies = ["Availability",
                         "Confidentiality", "Integrity", "Privacy"]
         fulfillmentText = "Very good! Now, tell me what is the adversarial goal of your system. Availability violation, Confidentiality violation, Integrity violation or Privacy violation?"
 
@@ -359,7 +360,7 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
 
     elif nombreIntent == 'siAdversarialModel':
         title = "Perfect! What is the targeted phase of your system? Training or Testing/Inference?"
-        quickReplies = ["Training", "Testing/Interference"]
+        quickReplies = ["Training", "Testing/Inference"]
         fulfillmentText = "Perfect! What is the targeted phase of your system? Training or Testing/Inference?"
 
     elif nombreIntent == 'siSUT':
@@ -406,10 +407,10 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         fulfillmentText = "Okey! What is the test adequacy metric? Coverage, Distance, Mutation score, other or none?"
 
     elif nombreIntent == 'testOracleType':
-        title = "Thanks! What is the test case generator type? Adversarial Input Generator, Combinatorial Generator, Input Mutation Generator, Manual Generator, Random Generator or Search-based Generator?"
+        title = "Thanks! What is the test case generator type? Adversarial Input Generator, Combinatorial Generator, Input Mutation Generator, Manual Generator, Random Generator, Search-based Generator or Other?"
         quickReplies = ["Adversarial", "Combinatorial",
-                        "Input Mutation", "Manual", "Random", "Search-based"]
-        fulfillmentText = "Thanks! What is the test case generator type? Adversarial Input Generator, Combinatorial Generator, Input Mutation Generator, Manual Generator, Random Generator or Search-based Generator?"
+                        "Input Mutation", "Manual", "Random", "Search-based", "Other"]
+        fulfillmentText = "Thanks! What is the test case generator type? Adversarial Input Generator, Combinatorial Generator, Input Mutation Generator, Manual Generator, Random Generator, Search-based Generator or Other?"
 
     elif nombreIntent == 'threatType':
         title = "Good! Now, list known vulnerabilities of your system."
@@ -423,7 +424,7 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
 
     elif nombreIntent == 'vulnerability':
         title = "Good! What is the fault of your system under test? Misclassification, Underfitting, Overfitting, Bias, Negative side effects, Reward hacking or other?"
-        quickReplies = ["Missclassification", "Underfitting", "Overfitting",
+        quickReplies = ["Misclassification", "Underfitting", "Overfitting",
                         "Bias", "Negative side effects", "Reward hacking", "Other"]
         fulfillmentText = "Good! What is the fault of your system under test? Misclassification, Underfitting, Overfitting, Bias, Negative side effects, Reward hacking or other?"
 
@@ -433,14 +434,14 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         fulfillmentText = "Great! Do you want to answer some questions about your system under test??"
 
     elif nombreIntent == "help":
-        title = "Here you have the help you need to talk with me:\n\n💬 𝐔𝐬𝐞 𝐨𝐧𝐭𝐨𝐥𝐨𝐠𝐲: To use the ontology you only have to write 'Hi', 'Use ontology' or 'New query' and answer the questions that I will ask you\n\n​📧​​ 𝐂𝐨𝐧𝐭𝐚𝐜𝐭: If you want to know the contact information you just have to write 'Contact' and I will show you all information\n\n⚠️ 𝐄𝐫𝐫𝐨𝐫: If you want to report some error you just have to write 'Report error' or 'Error' and I will show how you can report it\n\n🆘​ 𝐇𝐞𝐥𝐩: If you want to consult this information you just have to write 'Help' and I will show it you\n\n⁉️​ 𝐔𝐬𝐞𝐟𝐮𝐥 𝐜𝐨𝐧𝐜𝐞𝐩𝐭𝐬: For information about the concepts of the questions see this link http://rationale.kereval.com"
+        title = "Here you have the help you need to talk with me:\n\n💬 𝐔𝐬𝐞 𝐨𝐧𝐭𝐨𝐥𝐨𝐠𝐲: To use the ontology you only have to write 'Hi', 'Use ontology' or 'New query' and answer the questions that I will ask you\n\n​📧​​ 𝐂𝐨𝐧𝐭𝐚𝐜𝐭: If you want to know the contact information, you just have to write 'Contact' and I will show you all information\n\n⚠️ 𝐄𝐫𝐫𝐨𝐫: If you want to report some error, you just have to write 'Report error' or 'Error' and I will show how you can report it\n\n🆘​ 𝐇𝐞𝐥𝐩: If you want to consult this information, you just have to write 'Help' and I will show it you\n\n⁉️​ 𝐔𝐬𝐞𝐟𝐮𝐥 𝐜𝐨𝐧𝐜𝐞𝐩𝐭𝐬: For information about the concepts of the questions see this link http://rationale.kereval.com"
         quickReplies = ["New query"]
-        fulfillmentText = "Here you have the help you need to talk with me:\n\n💬 𝐔𝐬𝐞 𝐨𝐧𝐭𝐨𝐥𝐨𝐠𝐲: To use the ontology you only have to write 'Hi', 'Use ontology' or 'New query' and answer the questions that I will ask you\n\n​📧​ 𝐂𝐨𝐧𝐭𝐚𝐜𝐭: If you want to know the contact information you just have to write 'Contact' and I will show you all information\n\n⚠️ 𝐄𝐫𝐫𝐨𝐫: If you want to report some error you just have to write 'Report error' or 'Error' and I will show how you can report it\n\n🆘​ 𝐇𝐞𝐥𝐩: If you want to consult this information you just have to write 'Help' and I will show it you\n\n⁉️​ 𝐔𝐬𝐞𝐟𝐮𝐥 𝐜𝐨𝐧𝐜𝐞𝐩𝐭𝐬: For information about the concepts of the questions see this link http://rationale.kereval.com"
+        fulfillmentText = "Here you have the help you need to talk with me:\n\n💬 𝐔𝐬𝐞 𝐨𝐧𝐭𝐨𝐥𝐨𝐠𝐲: To use the ontology you only have to write 'Hi', 'Use ontology' or 'New query' and answer the questions that I will ask you\n\n​📧​ 𝐂𝐨𝐧𝐭𝐚𝐜𝐭: If you want to know the contact information, you just have to write 'Contact' and I will show you all information\n\n⚠️ 𝐄𝐫𝐫𝐨𝐫: If you want to report some error, you just have to write 'Report error' or 'Error' and I will show how you can report it\n\n🆘​ 𝐇𝐞𝐥𝐩: If you want to consult this information, you just have to write 'Help' and I will show it you\n\n⁉️​ 𝐔𝐬𝐞𝐟𝐮𝐥 𝐜𝐨𝐧𝐜𝐞𝐩𝐭𝐬: For information about the concepts of the questions see this link http://rationale.kereval.com"
 
     elif nombreIntent == "contact":
-        title = "Here you have all contact information:\n\nYou can contact us to give feedback or to contribute.\n\n🤝​ If you want to 𝐜𝐨𝐧𝐭𝐫𝐢𝐛𝐮𝐭𝐞, write to this email address (ontology.cotribute@gmail.com) indicating the type of component in the subject and explain this component in the body\n\n🤔 If you want to give 𝐟𝐞𝐞𝐝𝐛𝐚𝐜𝐤, you can write to this email address (ontology.feedback@gmail.com) whatever you want\n\nThank you for contacting us ❤️!"
+        title = "Here you have all contact information:\n\nYou can contact us to give feedback or to contribute.\n\n🤝​ If you want to 𝐜𝐨𝐧𝐭𝐫𝐢𝐛𝐮𝐭𝐞, write to this email address (ontologybot.contribute@gmail.com) indicating the type of component in the subject and explain this component in the body\n\n🤔 If you want to give 𝐟𝐞𝐞𝐝𝐛𝐚𝐜𝐤, you can write to this email address (ontologybot.feedback@gmail.com) whatever you want\n\nThank you for contacting us ❤️!"
         quickReplies = ["New query"]
-        fulfillmentText = "Here you have all contact information:\n\nYou can contact us to give feedback or to contribute.\n\n🤝​ If you want to 𝐜𝐨𝐧𝐭𝐫𝐢𝐛𝐮𝐭𝐞, write to this email address (ontology.cotribute@gmail.com) indicating the type of component in the subject and explain this component in the body\n\n🤔 If you want to give 𝐟𝐞𝐞𝐝𝐛𝐚𝐜𝐤, you can write to this email address (ontology.feedback@gmail.com) whatever you want\n\nThank you for contacting us ❤️!"
+        fulfillmentText = "Here you have all contact information:\n\nYou can contact us to give feedback or to contribute.\n\n🤝​ If you want to 𝐜𝐨𝐧𝐭𝐫𝐢𝐛𝐮𝐭𝐞, write to this email address (ontologybot.contribute@gmail.com) indicating the type of component in the subject and explain this component in the body\n\n🤔 If you want to give 𝐟𝐞𝐞𝐝𝐛𝐚𝐜𝐤, you can write to this email address (ontologybot.feedback@gmail.com) whatever you want\n\nThank you for contacting us ❤️!"
 
     elif nombreIntent == "errorReport":
         title = "𝗢𝗼𝗽𝘀❗ :(\n\nIf you have found an error about me, you can write to this email address and explain to my creators what is wrong. Thanks for helping me!\n\n📧 𝐄𝐦𝐚𝐢𝐥 𝐚𝐝𝐝𝐫𝐞𝐬𝐬: ontologybot.error@gmail.com"
