@@ -8,7 +8,7 @@ from typing import Optional, Text, Any, Dict
 import requests
 import json
 
-##URL BASE PARA HACER LAS LLAMADAS A LA API DE ANNE##
+##ONTOLOGY API URL##
 base_url = "http://rationale.kereval.com/api/request/"
 
 field_dict = {
@@ -125,13 +125,6 @@ def query_ontology_api(dataField: FieldModel):
 @app.post('/query_ontology_api_dialogflow')
 def query_ontology_api_dialogflow(request: Dict[Any, Any]):
 
-    # print(request)
-
-    # CONVIERTO JSON A DICCIONARIO
-    #diccionario = json.loads(request)
-
-    # print(diccionario)
-
     # OBTENGO DICCIONARIO QUERYRESULT PARA OBTENER LA INFO
     queryResult = request['queryResult']
 
@@ -196,7 +189,6 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         parameters = outputContextsDict['parameters']
 
     # ESTABLEZCO PRIMERO LOS PARAMETROS QUE NO TIENEN ENTIDADES EN DIALOGFLOW
-    print(nombreIntent)
     if nombreIntent == "datasetSUT":
         if (parameters['any'] == 'Skip' or parameters['any'] == 'skip'):
             field_dict['dataset'] = ""
@@ -234,8 +226,6 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
     # Si es uno de los intents finales hago la llamada a la API
     if (nombreIntent == "errorMitigationMechanism" or nombreIntent == "noTMS"):
         r = requests.post(base_url, data=field_dict)
-
-        print(r.status_code)
 
         if r.status_code != 200:
 
@@ -447,8 +437,6 @@ def query_ontology_api_dialogflow(request: Dict[Any, Any]):
         title = "𝗢𝗼𝗽𝘀❗ :(\n\nIf you have found an error about me, you can write to this email address and explain to my creators what is wrong. Thanks for helping me!\n\n📧 𝐄𝐦𝐚𝐢𝐥 𝐚𝐝𝐝𝐫𝐞𝐬𝐬: ontologybot.error@gmail.com"
         quickReplies = ["New query"]
         fulfillmentText = "𝗢𝗼𝗽𝘀❗ :(\n\nIf you have found an error about me, you can write to this email address and explain to my creators what is wrong. Thanks for helping me!\n\n📧 𝐄𝐦𝐚𝐢𝐥 𝐚𝐝𝐝𝐫𝐞𝐬𝐬: ontologybot.error@gmail.com"
-
-    print(field_dict)
 
     return {"fulfillmentText": fulfillmentText,
             "fulfillmentMessages": [{"quickReplies": {
