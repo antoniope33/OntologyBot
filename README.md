@@ -1,6 +1,6 @@
 # OntologyBot
 
-Ontology Bot is a bot to query an ontology on how to test machine learning AIs.
+OntologyBot is a bot to query an ontology on how to test machine learning AIs.
 
 ## Installation
 
